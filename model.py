@@ -61,8 +61,6 @@ class CustomCIFAR10Dataset(Dataset):
 
 
 # PARAMETERS
-# print("FUCKKKKKKK")
-# image = Image.open(train_images[0])
 
 # batch size during training
 batch_size = 128
@@ -121,7 +119,7 @@ class Net(nn.Module):
                                                             # helps reduce spatial dimensions of feature maps
 
         self.fc1 = nn.Linear(32 * 8 * 8, 16)                   # adjust the input size based on the output of the last conv layer
-        self.fc2 = nn.Linear(16, 10)
+        self.fc2 = nn.Linear(16, output)
 
 
     def forward(self, x):
