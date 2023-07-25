@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader, Dataset
 from PIL import Image
 
 from cifar10 import Cifar10
+from CustomCIFAR10Dataset import CustomCIFAR10Dataset
 
 
 # create dataset builder instance
@@ -38,30 +39,7 @@ classes =  ("airplane", "automobile", "bird", "cat", "deer",
 # plt.imshow(train_ds[0]["img"])
 # plt.show()
 
-# We have to make a custom dataset class to load them with the torch DataLoader
-# Custom dataset class for CIFAR-10 images
-class CustomCIFAR10Dataset(Dataset):
-    def __init__(self, images, labels, transform=None):
-        self.images = images
-        self.labels = labels
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.images)
-
-    def __getitem__(self, index):
-        image = self.images[index]
-        label = self.labels[index]
-
-        # Apply the transformations (if any)
-        if self.transform is not None:
-            image = self.transform(image)
-
-        return image, label
-
-
 # PARAMETERS
-
 # batch size during training
 batch_size = 128
 
@@ -96,6 +74,7 @@ transform = transforms.Compose([
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),  # Normalize the image to [-1, 1]
 ])
 
+# We use our custsom cifar10 dataset class to convert the dataset to a format that the torch dataloader can use
 train_ds = CustomCIFAR10Dataset(train_data["img"], train_data["label"], transform=transform)
 test_ds = CustomCIFAR10Dataset(test_data["img"], test_data["label"], transform=transform)
 
