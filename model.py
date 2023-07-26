@@ -97,7 +97,7 @@ class Net(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)       # a max pooling layer with kernel size of 3 and stride of 1
                                                             # helps reduce spatial dimensions of feature maps
 
-        self.fc1 = nn.Linear(32 * 8 * 8, 16)                   # adjust the input size based on the output of the last conv layer
+        self.fc1 = nn.Linear(32 * 8 * 8, 64)                   # adjust the input size based on the output of the last conv layer
         self.fc2 = nn.Linear(16, output)
 
 
@@ -191,3 +191,5 @@ print(f"Accuracy on the test dataset: {accuracy:.2%}")
 # After AutoAugment(CIFAR10):  ~40%
 
 # After Dropout: ~51-52%
+
+# After adding another fully connected layer (64 in, 16 out): ~50-51%
