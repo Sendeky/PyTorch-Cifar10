@@ -98,7 +98,8 @@ class Net(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),                          # a max pooling layer with kernel size of 3 and stride of 1
                                                                             # helps reduce spatial dimensions of feature maps
             nn.Flatten(),
-            nn.Linear(32 * 16 * 16, 16),                                    # adjust the input size based on the output of the last conv layer
+            nn.Linear(32 * 16 * 16, 64),                                    # adjust the input size based on the output of the last conv layer
+            nn.Linear(64, 16),
             nn.Linear(16, output),
         )
 
