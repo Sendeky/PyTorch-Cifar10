@@ -88,29 +88,31 @@ class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
 
-        # first 2 concolutional layers
-        self.conv1 = nn.Conv2d(nc, 16, kernel_size=3, stride=1, padding=1)         # a convoltional layer with 3 input channels, 16 output channels,
-                                                            # a kernel size of 3, a stride of 1, and padding of 1
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1)
+        self.network = nn.Sequential(
+            # first 2 concolutional layers
+            nn.Conv2d(nc, 16, kernel_size=3, stride=1, padding=1),          # a convoltional layer with 3 input channels, 16 output channels,
+                                                                            # a kernel size of 3, a stride of 1, and padding of 1
+            nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
 
-        # max pooling layers
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)       # a max pooling layer with kernel size of 3 and stride of 1
-                                                            # helps reduce spatial dimensions of feature maps
-
-        self.fc1 = nn.Linear(32 * 8 * 8, 64)                   # adjust the input size based on the output of the last conv layer
-        self.fc2 = nn.Linear(16, output)
+            # max pooling layers
+            nn.MaxPool2d(kernel_size=2, stride=2),                          # a max pooling layer with kernel size of 3 and stride of 1
+                                                                            # helps reduce spatial dimensions of feature maps
+            nn.Flatten(),
+            nn.Linear(32 * 16 * 16, 16),                                    # adjust the input size based on the output of the last conv layer
+            nn.Linear(16, output),
+        )
 
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))                # First convoltional layer, then ReLU active, then max pooling
-        x = self.pool(F.relu(self.conv2(x)))                # Second convolutional layer, then ReLu, then pooling
+        # x = self.pool(F.relu(self.conv1(x)))                # First convoltional layer, then ReLU active, then max pooling
+        # x = self.pool(F.relu(self.conv2(x)))                # Second convolutional layer, then ReLu, then pooling
 
-        x = x.view(x.size(0), -1)                           # Flatten tensor before passing through fully connected layers
+        # x = x.view(x.size(0), -1)                           # Flatten tensor before passing through fully connected layers
 
-        x = F.relu(self.fc1(x))                             # First fully connected layer, then ReLu, then pooling
-        x = self.fc2(x)                                     # Layer with predictions, fully connected
+        # x = F.relu(self.fc1(x))                             # First fully connected layer, then ReLu, then pooling
+        # x = self.fc2(x)                                     # Layer with predictions, fully connected
 
-        return x
+        return self.network(x)
     
 # creates instance of the model
 model = Net()
@@ -118,6 +120,7 @@ model = Net()
 # create the optimizer and criterion
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters() , lr=learning_rate, momentum=0.9)
+# Maybe use Adam
 
 # moves model to device (ie. cpu/gpu)
 model.to(device)
@@ -193,3 +196,7 @@ print(f"Accuracy on the test dataset: {accuracy:.2%}")
 # After Dropout: ~51-52%
 
 # After adding another fully connected layer (64 in, 16 out): ~50-51%
+
+# After adding weight decay to optimizer: (0.01): ~51+%
+
+# ADDED: After adding all layers to nn.Sequential: ~55-57%
