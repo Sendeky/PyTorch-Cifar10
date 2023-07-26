@@ -104,14 +104,6 @@ class Net(nn.Module):
 
 
     def forward(self, x):
-        # x = self.pool(F.relu(self.conv1(x)))                # First convoltional layer, then ReLU active, then max pooling
-        # x = self.pool(F.relu(self.conv2(x)))                # Second convolutional layer, then ReLu, then pooling
-
-        # x = x.view(x.size(0), -1)                           # Flatten tensor before passing through fully connected layers
-
-        # x = F.relu(self.fc1(x))                             # First fully connected layer, then ReLu, then pooling
-        # x = self.fc2(x)                                     # Layer with predictions, fully connected
-
         return self.network(x)
     
 # creates instance of the model
@@ -119,8 +111,8 @@ model = Net()
 
 # create the optimizer and criterion
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters() , lr=learning_rate, momentum=0.9)
-# Maybe use Adam
+# Adam optimizer yields much better results than SGD
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 # moves model to device (ie. cpu/gpu)
 model.to(device)
@@ -200,3 +192,5 @@ print(f"Accuracy on the test dataset: {accuracy:.2%}")
 # After adding weight decay to optimizer: (0.01): ~51+%
 
 # ADDED: After adding all layers to nn.Sequential: ~55-57%
+
+# ADDED: After using optim.Adam instead of optim.SGD: ~61-62%
