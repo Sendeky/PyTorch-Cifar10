@@ -107,7 +107,7 @@ class Net(nn.Module):
 
         x = x.view(x.size(0), -1)                           # Flatten tensor before passing through fully connected layers
 
-        x = F.relu(self.fc1(x))                          # First fully connected layer, then ReLu, then pooling
+        x = F.relu(self.fc1(x))                             # First fully connected layer, then ReLu, then pooling
         x = self.fc2(x)                                     # Layer with predictions, fully connected
 
         return x
@@ -122,7 +122,7 @@ optimizer = optim.SGD(model.parameters() , lr=learning_rate, momentum=0.9)
 # moves model to device (ie. cpu/gpu)
 model.to(device)
 
-
+print("started training")
 for epoch in range(num_epochs):
     model.train()           # set model to training mode (important when using dropout or batch normalization)
 
@@ -152,17 +152,42 @@ for epoch in range(num_epochs):
             print(f'[{epoch + 1}, {batch_idx + 1:5d}] loss: {running_loss / 2000:.3f}')
             running_loss = 0.0
         
+    print(f"epoch: {epoch}/{num_epochs}")
+        
 print("finished training")
 
 
-# # After training, evaluate the model on the test dataset to get final performance metrics
-# model.eval()  # Set the model to evaluation mode (important when using dropout or batch normalization)
-# with torch.no_grad():
-#     for batch_idx, (images, labels) in enumerate(test_ds):
-#         images = images.to(device)
-#         labels = labels.to(device)
+# After training, evaluate the model on the test dataset to get final performance metrics
+model.eval()  # Set the model to evaluation mode (important when using dropout or batch normalization)
+correct = 0
+total = 0
 
-#         # Forward pass
-#         predictions = model(images)
+with torch.no_grad():
+    for batch_idx, (images, labels) in enumerate(test_loader):
+        images = images.to(device)
+        labels = labels.to(device)
 
-#         # Compute evaluation metrics (e.g., accuracy, precision, recall, etc.)
+        # Forward pass
+        predictions = model(images)
+
+        # Compute evaluation metrics (e.g., accuracy, precision, recall, etc.)
+        # get predicted class for each image
+        _, predicted = torch.max(predictions.data, 1)
+
+        # Count the total number of labels in the test dataset
+        total += labels.size(0)
+
+        # Count the number of correct predictions
+        correct += (predicted == labels).sum().item()
+
+# calculate the accuracy
+accuracy = correct/total
+print(f"Accuracy on the test dataset: {accuracy:.2%}")
+
+
+## IMPROVEMENTS/DEGREDATIONS ##
+# BASELINE: ~51-54%
+
+# After AutoAugment(CIFAR10):  ~40%
+
+# After Dropout: ~51-52%
