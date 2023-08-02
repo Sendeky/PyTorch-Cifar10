@@ -45,7 +45,7 @@ nc = 3
 output = len(classes)
 
 # Num of GPUs (pick 0 for CPU)
-ngpu = 0
+ngpu = 1
 
 # number of workers
 nw = 0
