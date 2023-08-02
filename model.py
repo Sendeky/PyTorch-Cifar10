@@ -1,12 +1,9 @@
-import os
-import datasets
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Dataset
-from PIL import Image
 
 from cifar10 import Cifar10
 from CustomCIFAR10Dataset import CustomCIFAR10Dataset
