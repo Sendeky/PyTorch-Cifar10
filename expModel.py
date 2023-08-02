@@ -1,12 +1,9 @@
-# import os
-# import datasets
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Dataset
-# from PIL import Image
 
 from cifar10 import Cifar10
 from CustomCIFAR10Dataset import CustomCIFAR10Dataset
@@ -51,7 +48,7 @@ ngpu = 1
 nw = 0
 
 # number of training epochs
-num_epochs = 25 
+num_epochs = 15 
 
 # learning rate
 learning_rate = 0.0022
@@ -222,5 +219,7 @@ print(f"Accuracy on the test dataset: {accuracy:.2%}")
 # ADDED: After adding all layers to nn.Sequential: ~55-57%
 
 # ADDED: After using optim.Adam instead of optim.SGD: ~61-62%
+
+# ADDED: After mimicking VGG16 architecture with: Conv2d -> ReLU -> MaxPool -> REPEAT
 
 # MAX CURRENT ACCURACY: 72.71%
