@@ -148,7 +148,7 @@ for epoch in range(num_epochs):
             print(f'[{epoch + 1}, {batch_idx + 1:5d}] loss: {running_loss / 2000:.3f}')
             running_loss = 0.0
         
-    print(f"epoch: {epoch}/{num_epochs}")
+    print(f"epoch: {epoch + 1}/{num_epochs}")
         
 print("finished training")
 
@@ -195,3 +195,5 @@ print(f"Accuracy on the test dataset: {accuracy:.2%}")
 # ADDED: After adding all layers to nn.Sequential: ~55-57%
 
 # ADDED: After using optim.Adam instead of optim.SGD: ~61-62%
+
+# MAX Observed accuracy: 63.20%
