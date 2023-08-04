@@ -48,7 +48,7 @@ ngpu = 1
 nw = 0
 
 # number of training epochs
-num_epochs = 15 
+num_epochs = 33 
 
 # learning rate
 learning_rate = 0.0022
@@ -58,8 +58,10 @@ device = torch.device("cuda:0" if (torch.cuda.is_available()) and (ngpu > 0) els
 
 # transforms for image. CONVERT TO TENSOR VERY IMPORTANT, OTHERWISE DATALOADER WON"T ACCEPT IMAGE
 transform = transforms.Compose([
-    transforms.Resize((32, 32)),         # Resize the image to 32x32 (required for CIFAR-10)
-    transforms.ToTensor(),               # Convert PIL Image to a tensor
+    transforms.Resize((32, 32)),                # Resize the image to 32x32 (required for CIFAR-10)
+    transforms.RandomResizedCrop(32, scale=(0.8, 0.8)),    # Random crop (image augmentation)
+    transforms.RandomHorizontalFlip(),          # Random hoizontal flip (image augmentation) 
+    transforms.ToTensor(),                      # Convert PIL Image to a tensor
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),  # Normalize the image to [-1, 1]
 ])
 
@@ -81,15 +83,19 @@ class Net(nn.Module):
             # first 2 concolutional layers
             nn.Conv2d(nc, 16, kernel_size=3, stride=1, padding=1),          # a convoltional layer with 3 input channels, 16 output channels,
                                                                             # a kernel size of 3, a stride of 1, and padding of 1
+            nn.BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=1, stride=1),
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
             nn.ReLU(),
             nn.MaxPool2d(1, 1),
             nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=1, stride=1),
             nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=1, stride=1),
             nn.Conv2d(32, 16, kernel_size=3, stride=1, padding=1),
@@ -112,6 +118,8 @@ class Net(nn.Module):
 # creates instance of the model
 model = Net()
 
+print("model parameters: ", model.parameters)
+
 # create the optimizer and criterion
 criterion = nn.CrossEntropyLoss()
 # Adam optimizer yields much better results than SGD
@@ -119,6 +127,9 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=0.001)
 
 # moves model to device (ie. cpu/gpu)
 model.to(device)
+
+# accuracy array (for plotting)
+accuracyArr = []
 
 print("started training")
 for epoch in range(num_epochs):
@@ -147,7 +158,7 @@ for epoch in range(num_epochs):
         # print statistics
         running_loss += loss.item()
         
-    print(f"epoch: {epoch + 1}/{num_epochs}")
+    print(f"epoch: {epoch + 1}/{num_epochs} Loss: {running_loss}")
 
     # After training, evaluate the model on the test dataset to get final performance metrics
     model.eval()  # Set the model to evaluation mode (important when using dropout or batch normalization)
@@ -174,6 +185,7 @@ for epoch in range(num_epochs):
 
     # calculate the accuracy
     accuracy = correct/total
+    accuracyArr.append(accuracy)
     print(f"Accuracy on the test dataset: {accuracy:.2%}, epoch: {epoch + 1}")
 
 
@@ -223,3 +235,10 @@ print(f"Accuracy on the test dataset: {accuracy:.2%}")
 # ADDED: After mimicking VGG16 architecture with: Conv2d -> ReLU -> MaxPool -> REPEAT
 
 # MAX CURRENT ACCURACY: 72.71%
+
+# import numpy as np
+# import matplotlib.pyplot as plt
+# y = np.array(accuracyArr)
+# x = num_epochs
+# plt.plot(x, y)
+# plt.show()
