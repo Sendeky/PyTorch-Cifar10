@@ -63,6 +63,8 @@ transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),          # Random hoizontal flip (image augmentation) 
     transforms.ToTensor(),                      # Convert PIL Image to a tensor
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),  # Normalize the image to [-1, 1]
+    # Normalizaion is supposed to use the mean and std_div of the pixel values
+    # 
 ])
 
 # We use our custsom cifar10 dataset class to convert the dataset to a format that the torch dataloader can use
